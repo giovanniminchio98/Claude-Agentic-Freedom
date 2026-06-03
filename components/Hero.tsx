@@ -98,7 +98,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden grid-bg scanlines">
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-x-hidden grid-bg scanlines">
       {/* Particle canvas */}
       <canvas
         ref={canvasRef}
@@ -127,7 +127,7 @@ export default function Hero() {
       />
 
       {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-8 sm:px-12 w-full max-w-4xl mx-auto">
         {/* Status chip */}
         <div className="flex justify-center mb-8">
           <div className="chip animate-pulse-glow">
@@ -139,14 +139,14 @@ export default function Hero() {
         {/* Main logo/title */}
         <div className="mb-6 relative">
           <h1
-            className="font-display font-black uppercase tracking-[0.15em] leading-none animate-glitch"
-            style={{ fontSize: "clamp(3rem, 10vw, 8rem)" }}
+            className="font-display font-black uppercase leading-none animate-glitch"
+            style={{ fontSize: "clamp(2.5rem, 9vw, 7rem)", letterSpacing: "0.1em" }}
           >
             <span className="gradient-text">ZIBALDONE</span>
           </h1>
           <p
             className="font-display font-light tracking-[0.5em] text-white/30 uppercase mt-2"
-            style={{ fontSize: "clamp(0.55rem, 1.5vw, 0.9rem)", letterSpacing: "0.6em" }}
+            style={{ fontSize: "clamp(0.5rem, 1.2vw, 0.75rem)", letterSpacing: "0.3em" }}
           >
             AGENTIC · AI · KNOWLEDGE · BASE
           </p>
@@ -155,7 +155,7 @@ export default function Hero() {
         {/* Tagline */}
         <p
           className="font-body text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed"
-          style={{ fontSize: "clamp(0.95rem, 2vw, 1.15rem)" }}
+          style={{ fontSize: "clamp(0.85rem, 1.8vw, 1.05rem)" }}
         >
           The open encyclopedia for autonomous AI systems. From first principles
           to frontier research — everything you need to understand and build{" "}
