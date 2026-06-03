@@ -1,0 +1,266 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$metadata": {
+    "name": "Zibaldone Design System",
+    "description": "Futuristic dark-mode UI — cyber/neon palette, glassmorphism, Orbitron display font",
+    "version": "1.0.0",
+    "project": "https://github.com/giovanniminchio98/Claude-Agentic-Freedom"
+  },
+
+  "color": {
+    "$type": "color",
+
+    "background": {
+      "void":       { "$value": "#000008", "$description": "Page background — deepest black with a hint of blue" },
+      "deep-space": { "$value": "#030310", "$description": "Secondary background, nav, panels" },
+      "card":       { "$value": "rgba(0,20,40,0.6)", "$description": "Glassmorphism card background" }
+    },
+
+    "accent": {
+      "cyber-blue":   { "$value": "#00D4FF", "$description": "Primary accent — electric cyan. Use for CTAs, links, highlights" },
+      "cyber-purple": { "$value": "#7B2FFF", "$description": "Secondary accent — deep violet. Use for secondary elements" },
+      "neon-green":   { "$value": "#00FF94", "$description": "Success / live / active states" },
+      "plasma-pink":  { "$value": "#FF0090", "$description": "Warning / hot / attention states" },
+      "amber":        { "$value": "#FFB800", "$description": "Caution / safety / research level" },
+      "hologram":     { "$value": "#A0F0FF", "$description": "Pale cyan — research / subtle highlights" }
+    },
+
+    "text": {
+      "primary":    { "$value": "#E8F4F8", "$description": "Main body text" },
+      "secondary":  { "$value": "rgba(232,244,248,0.70)", "$description": "Subdued text" },
+      "muted":      { "$value": "rgba(232,244,248,0.45)", "$description": "Placeholder / meta text" },
+      "faint":      { "$value": "rgba(232,244,248,0.25)", "$description": "Very low contrast — dates, indexes" },
+      "ghost":      { "$value": "rgba(232,244,248,0.15)", "$description": "Barely visible — decorative numbers" }
+    },
+
+    "border": {
+      "subtle":   { "$value": "rgba(0,212,255,0.08)",  "$description": "Grid lines" },
+      "default":  { "$value": "rgba(0,212,255,0.15)",  "$description": "Card borders at rest" },
+      "hover":    { "$value": "rgba(0,212,255,0.40)",  "$description": "Card borders on hover" },
+      "divider":  { "$value": "rgba(255,255,255,0.05)","$description": "Section dividers, horizontal rules" }
+    },
+
+    "level": {
+      "beginner":     { "$value": "#00FF94", "$description": "Beginner learning path" },
+      "intermediate": { "$value": "#00D4FF", "$description": "Intermediate learning path" },
+      "advanced":     { "$value": "#7B2FFF", "$description": "Advanced learning path" },
+      "research":     { "$value": "#FF0090", "$description": "Research / frontier level" }
+    }
+  },
+
+  "typography": {
+    "fontFamily": {
+      "display": { "$value": "'Orbitron', monospace",       "$description": "Headings, titles, labels — futuristic all-caps" },
+      "body":     { "$value": "'Inter', sans-serif",         "$description": "Prose, descriptions, body text" },
+      "mono":     { "$value": "'JetBrains Mono', monospace", "$description": "Tags, chips, badges, code, metadata" }
+    },
+
+    "googleFonts": {
+      "$description": "Import these in <head> or next/font",
+      "orbitron":      { "$value": "https://fonts.google.com/specimen/Orbitron",      "weights": ["400","600","700","900"] },
+      "inter":         { "$value": "https://fonts.google.com/specimen/Inter",         "weights": ["300","400","500","600"] },
+      "jetbrainsMono": { "$value": "https://fonts.google.com/specimen/JetBrains+Mono","weights": ["400","500"] }
+    },
+
+    "scale": {
+      "hero":     { "$value": "clamp(2.5rem, 9vw, 7rem)",   "$description": "Main hero title" },
+      "h1":       { "$value": "clamp(1.8rem, 5vw, 3.5rem)", "$description": "Section hero headings" },
+      "h2":       { "$value": "clamp(1.6rem, 4vw, 2.8rem)", "$description": "Section headings" },
+      "h3":       { "$value": "0.875rem",                    "$description": "Card titles (display font, uppercase)" },
+      "body-lg":  { "$value": "clamp(0.85rem, 1.8vw, 1.05rem)", "$description": "Hero tagline paragraph" },
+      "body":     { "$value": "0.875rem",                    "$description": "Standard body text" },
+      "small":    { "$value": "0.75rem",                     "$description": "Descriptions, summaries" },
+      "xs":       { "$value": "0.7rem",                      "$description": "Chips, badges, tags, meta" }
+    },
+
+    "tracking": {
+      "hero-subtitle": { "$value": "0.3em",  "$description": "Hero subtitle letterSpacing" },
+      "display":       { "$value": "0.1em",  "$description": "Large display headings" },
+      "widest":        { "$value": "0.2em",  "$description": "Section labels, chip text" },
+      "mono-label":    { "$value": "0.08em", "$description": "Mono chips/tags" }
+    }
+  },
+
+  "spacing": {
+    "section-y":    { "$value": "6rem",   "$description": "py-24 — standard vertical section padding" },
+    "section-y-lg": { "$value": "7rem",   "$description": "py-28 — featured section vertical padding" },
+    "container-x":  { "$value": "1.5rem", "$description": "px-6 — horizontal page padding" },
+    "card-padding":  { "$value": "1.25rem","$description": "p-5 — standard card inner padding" },
+    "card-padding-lg":{ "$value": "1.5rem","$description": "p-6 — large card inner padding" },
+    "max-width":     { "$value": "80rem",  "$description": "max-w-7xl — main content container" }
+  },
+
+  "borderRadius": {
+    "card":    { "$value": "12px",   "$description": "Glass cards" },
+    "button":  { "$value": "4px",    "$description": "Primary buttons" },
+    "chip":    { "$value": "100px",  "$description": "Fully pill-shaped chips" },
+    "tag":     { "$value": "2px",    "$description": "Small mono tags" },
+    "icon":    { "$value": "6px",    "$description": "Icon containers" },
+    "full":    { "$value": "9999px", "$description": "Progress bars, dots" }
+  },
+
+  "shadow": {
+    "neon-blue":   { "$value": "0 0 20px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.2)" },
+    "neon-purple": { "$value": "0 0 20px rgba(123,47,255,0.5), 0 0 60px rgba(123,47,255,0.2)" },
+    "neon-green":  { "$value": "0 0 20px rgba(0,255,148,0.5), 0 0 60px rgba(0,255,148,0.2)" },
+    "card":        { "$value": "0 0 0 1px rgba(0,212,255,0.15), 0 8px 32px rgba(0,0,0,0.5)" },
+    "card-hover":  { "$value": "0 0 30px rgba(0,212,255,0.1), inset 0 0 30px rgba(0,212,255,0.03)" },
+    "modal":       { "$value": "0 0 20px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.2)" }
+  },
+
+  "blur": {
+    "glass":  { "$value": "12px", "$description": "backdrop-filter on glass cards" },
+    "nav":    { "$value": "8px",  "$description": "backdrop-filter on sticky nav" }
+  },
+
+  "gradient": {
+    "brand": {
+      "$value": "linear-gradient(135deg, #00D4FF 0%, #7B2FFF 50%, #FF0090 100%)",
+      "$description": "Animated gradient for hero titles — use with background-clip: text"
+    },
+    "hero-radial": {
+      "$value": "radial-gradient(ellipse 70% 50% at 50% 40%, rgba(123,47,255,0.12), transparent 70%)",
+      "$description": "Subtle purple glow behind hero content"
+    },
+    "divider": {
+      "$value": "linear-gradient(90deg, transparent, rgba(0,212,255,0.4), rgba(123,47,255,0.4), transparent)",
+      "$description": "Glowing horizontal section dividers"
+    },
+    "grid-bg": {
+      "$value": "repeating linear-gradient at 60px × 60px, rgba(0,212,255,0.05)",
+      "$description": "Page background dot/grid pattern"
+    }
+  },
+
+  "animation": {
+    "duration": {
+      "fast":   { "$value": "0.15s" },
+      "normal": { "$value": "0.3s" },
+      "slow":   { "$value": "0.7s" }
+    },
+    "easing": {
+      "default": { "$value": "ease" },
+      "in-out":  { "$value": "ease-in-out" }
+    },
+    "keyframes": {
+      "pulse-glow":     { "$value": "opacity + brightness cycle, 3s ease-in-out infinite" },
+      "float":          { "$value": "translateY 0 → -12px → 0, 6s ease-in-out infinite" },
+      "glitch":         { "$value": "random translate jitter, 5s steps(1) infinite" },
+      "gradient-shift": { "$value": "backgroundPosition 0%→100%→0%, 8s ease infinite" },
+      "scan":           { "$value": "translateY -100% → 100vh, 8s linear infinite" },
+      "spin-slow":      { "$value": "rotate 0→360deg, 20s linear infinite" },
+      "fadeInUp":       { "$value": "opacity+translateY 24px→0, 0.7s ease forwards" },
+      "data-stream":    { "$value": "translateY 0 → -50%, 20s linear infinite" }
+    }
+  },
+
+  "components": {
+    "glass-card": {
+      "$description": "The core reusable surface",
+      "background":        { "$value": "rgba(0,20,40,0.6)" },
+      "backdropFilter":    { "$value": "blur(12px)" },
+      "border":            { "$value": "1px solid rgba(0,212,255,0.15)" },
+      "borderRadius":      { "$value": "12px" },
+      "transition":        { "$value": "all 0.3s ease" },
+      "hover-border":      { "$value": "rgba(0,212,255,0.40)" },
+      "hover-shadow":      { "$value": "0 0 30px rgba(0,212,255,0.1)" },
+      "hover-transform":   { "$value": "translateY(-2px)" }
+    },
+    "chip": {
+      "$description": "Section label / status badge",
+      "background":     { "$value": "rgba(0,212,255,0.10)" },
+      "border":         { "$value": "1px solid rgba(0,212,255,0.30)" },
+      "borderRadius":   { "$value": "100px" },
+      "padding":        { "$value": "4px 12px" },
+      "fontSize":       { "$value": "0.7rem" },
+      "letterSpacing":  { "$value": "0.08em" },
+      "textTransform":  { "$value": "uppercase" },
+      "fontFamily":     { "$value": "mono" }
+    },
+    "btn-primary": {
+      "$description": "CTA button with fill-on-hover",
+      "padding":        { "$value": "12px 28px" },
+      "borderRadius":   { "$value": "4px" },
+      "border":         { "$value": "1px solid #00D4FF" },
+      "background":     { "$value": "linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,47,255,0.15))" },
+      "color":          { "$value": "#00D4FF" },
+      "fontSize":       { "$value": "0.8rem" },
+      "fontFamily":     { "$value": "display" },
+      "fontWeight":     { "$value": "600" },
+      "letterSpacing":  { "$value": "0.12em" },
+      "textTransform":  { "$value": "uppercase" },
+      "hover-fill":     { "$value": "linear-gradient(135deg, #00D4FF, #7B2FFF)" },
+      "hover-color":    { "$value": "#000008" },
+      "hover-shadow":   { "$value": "0 0 30px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.2)" }
+    },
+    "modal": {
+      "backdrop":       { "$value": "rgba(0,0,8,0.85) + backdrop-blur(4px)" },
+      "background":     { "$value": "rgba(0,20,40,0.6)" },
+      "border":         { "$value": "1px solid rgba(0,212,255,0.20)" },
+      "borderRadius":   { "$value": "12px" },
+      "shadow":         { "$value": "0 0 20px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.2)" },
+      "topAccentLine":  { "$value": "1px gradient line: transparent → #00D4FF60 → transparent" },
+      "maxHeight":      { "$value": "90vh" },
+      "padding":        { "$value": "1.5rem" }
+    },
+    "nav": {
+      "height":           { "$value": "64px / 4rem" },
+      "scrolled-bg":      { "$value": "rgba(0,0,8,0.80) + backdrop-blur(12px)" },
+      "scrolled-border":  { "$value": "1px solid rgba(0,212,255,0.10)" },
+      "z-index":          { "$value": "50" }
+    },
+    "progress-bar": {
+      "track":    { "$value": "rgba(255,255,255,0.05)" },
+      "height":   { "$value": "4px (h-1)" },
+      "radius":   { "$value": "9999px" },
+      "fill":     { "$value": "accent color with 0.5 opacity glow shadow" }
+    },
+    "scrollbar": {
+      "width":        { "$value": "4px" },
+      "track":        { "$value": "#000008" },
+      "thumb":        { "$value": "#00D4FF" },
+      "thumb-hover":  { "$value": "#7B2FFF" }
+    },
+    "selection": {
+      "background": { "$value": "rgba(0,212,255,0.30)" },
+      "color":      { "$value": "#ffffff" }
+    }
+  },
+
+  "patterns": {
+    "neon-text": {
+      "$description": "Apply to any element for glowing text",
+      "blue":   "color:#00D4FF; text-shadow: 0 0 10px rgba(0,212,255,0.8), 0 0 30px rgba(0,212,255,0.4)",
+      "purple": "color:#7B2FFF; text-shadow: 0 0 10px rgba(123,47,255,0.8), 0 0 30px rgba(123,47,255,0.4)",
+      "green":  "color:#00FF94; text-shadow: 0 0 10px rgba(0,255,148,0.8), 0 0 30px rgba(0,255,148,0.4)"
+    },
+    "gradient-text": {
+      "$description": "Animated gradient fill on text",
+      "background":           "linear-gradient(135deg, #00D4FF 0%, #7B2FFF 50%, #FF0090 100%)",
+      "-webkit-background-clip": "text",
+      "-webkit-text-fill-color": "transparent",
+      "background-size":      "200% 200%",
+      "animation":            "gradient-shift 8s ease infinite"
+    },
+    "holo-border": {
+      "$description": "Animated rainbow border via ::before pseudo-element",
+      "pseudo-background":  "linear-gradient(135deg, #00D4FF, #7B2FFF, #FF0090, #00D4FF)",
+      "background-size":    "300% 300%",
+      "animation":          "gradient-shift 4s ease infinite",
+      "mask":               "xor mask to show only border"
+    },
+    "scanlines": {
+      "$description": "CRT scan-line texture via ::after pseudo-element",
+      "background": "repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,212,255,0.015) 2px 4px)"
+    },
+    "grid-bg": {
+      "$description": "Subtle dot-grid page background",
+      "background-image": "two perpendicular linear-gradients at rgba(0,212,255,0.05)",
+      "background-size":  "60px 60px"
+    },
+    "section-radial-glow": {
+      "$description": "Per-section atmospheric glow — change color per brand accent",
+      "template": "radial-gradient(ellipse {W}% {H}% at {X}% {Y}%, {color-with-opacity}, transparent 70%)"
+    }
+  }
+}
