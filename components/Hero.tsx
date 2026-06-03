@@ -142,7 +142,7 @@ export default function Hero() {
             className="font-display font-black uppercase leading-none animate-glitch"
             style={{ fontSize: "clamp(2.5rem, 9vw, 7rem)", letterSpacing: "0.1em" }}
           >
-            <span className="gradient-text">ZIBALDONE</span>
+            <span className="gradient-text">ZIBALDONE</span><span style={{ color: "#00FF94", textShadow: "0 0 30px rgba(0,255,148,0.6)", fontSize: "0.7em", verticalAlign: "super", letterSpacing: "0.05em" }}>.AI</span>
           </h1>
           <p
             className="font-display font-light tracking-[0.5em] text-white/30 uppercase mt-2"

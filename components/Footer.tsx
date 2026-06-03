@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import { Zap, Mail } from "lucide-react";
 
 // Social icon SVGs (inline for zero dependency)
 function TwitterX({ className }: { className?: string }) {
@@ -28,37 +28,29 @@ function GitHub({ className }: { className?: string }) {
   );
 }
 
-function YouTube({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-    </svg>
-  );
-}
-
 const socialLinks = [
   {
     label: "X / Twitter",
     icon: TwitterX,
-    href: "#",
+    href: "https://x.com/giovanniminc?s=21",
     color: "#00D4FF",
   },
   {
     label: "LinkedIn",
     icon: LinkedIn,
-    href: "#",
+    href: "https://www.linkedin.com/in/giovanni-minchio-6958a61b2",
     color: "#7B2FFF",
+  },
+  {
+    label: "Email",
+    icon: ({ className }: { className?: string }) => <Mail className={className} />,
+    href: "mailto:gminchiogm@gmail.com",
+    color: "#00FF94",
   },
   {
     label: "GitHub",
     icon: GitHub,
-    href: "https://github.com/giovanniminchio98/Claude-Agentic-Freedom",
-    color: "#00FF94",
-  },
-  {
-    label: "YouTube",
-    icon: YouTube,
-    href: "#",
+    href: "https://github.com/giovanniminchio98",
     color: "#FF0090",
   },
 ];
@@ -116,7 +108,7 @@ export default function Footer() {
                 <Zap className="absolute inset-0 m-auto w-4 h-4 text-cyber-blue" />
               </div>
               <span className="font-display font-black text-sm tracking-[0.25em] uppercase neon-text-blue">
-                ZIBALDONE
+                ZIBALDONE<span style={{ color: "#00FF94", textShadow: "0 0 10px rgba(0,255,148,0.5)" }}>.AI</span>
               </span>
             </div>
             <p className="text-white/40 text-xs font-body leading-relaxed mb-6 max-w-xs">
@@ -131,7 +123,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   target={href.startsWith("http") ? "_blank" : undefined}
-                  rel="noopener noreferrer"
+                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                   aria-label={label}
                   className="w-9 h-9 rounded flex items-center justify-center border border-white/10 hover:border-current transition-all duration-200 group"
                   style={{ "--hover-color": color } as React.CSSProperties}
@@ -181,7 +173,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="font-mono text-xs text-white/25">
-            © {new Date().getFullYear()} ZIBALDONE · Free &amp; Open Source ·{" "}
+            © {new Date().getFullYear()} ZIBALDONE.AI · Free &amp; Open Source ·{" "}
             <a
               href="https://github.com/giovanniminchio98/Claude-Agentic-Freedom"
               target="_blank"

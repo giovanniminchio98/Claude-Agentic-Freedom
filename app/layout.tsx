@@ -21,13 +21,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZIBALDONE — Agentic AI Knowledge Base",
+  title: "ZIBALDONE.AI — Agentic AI Knowledge Base",
   description:
     "The free open knowledge base for Agentic AI. Learn, explore, and master autonomous AI systems from first principles to cutting-edge research.",
   keywords: ["agentic AI", "autonomous AI", "LLM agents", "AI learning", "machine learning"],
   authors: [{ name: "Giovanni Minchio" }],
   openGraph: {
-    title: "ZIBALDONE — Agentic AI Knowledge Base",
+    title: "ZIBALDONE.AI — Agentic AI Knowledge Base",
     description: "The free open knowledge base for Agentic AI.",
     type: "website",
   },

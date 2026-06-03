@@ -45,7 +45,7 @@ export default function Nav() {
             className="font-display font-black text-sm tracking-[0.2em] uppercase neon-text-blue"
             style={{ letterSpacing: "0.25em" }}
           >
-            ZIBALDONE
+            ZIBALDONE<span style={{ color: "#00FF94", textShadow: "0 0 10px rgba(0,255,148,0.5)" }}>.AI</span>
           </span>
         </Link>
 
