@@ -31,6 +31,13 @@ export const metadata: Metadata = {
     description: "The free open knowledge base for Agentic AI.",
     type: "website",
   },
+  icons: {
+    apple: [{ url: "/Claude-Agentic-Freedom/apple-touch-icon.png", sizes: "180x180" }],
+    icon: [
+      { url: "/Claude-Agentic-Freedom/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/Claude-Agentic-Freedom/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -40,6 +47,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="manifest" href="/Claude-Agentic-Freedom/site.webmanifest" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="ZIBALDONE.AI" />
+        <meta name="theme-color" content="#000008" />
+      </head>
       <body
         className={`${orbitron.variable} ${inter.variable} ${jetbrainsMono.variable} bg-void text-white antialiased`}
       >
