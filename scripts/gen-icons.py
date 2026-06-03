@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Generate ZIBALDONE.AI PWA icons — SDF rendering for smooth, rounded shapes."""
+"""
+Generate ZIBALDONE.AI PWA icons.
+
+Z = 3 capsules sharing endpoints — mathematically guaranteed smooth joins.
+When two capsules share a point with equal radius, their round caps are
+identical, so min(sdf1, sdf2) == dist_to_shared_point - r at the corner.
+No seams, no T-junctions, looks like a single continuous stroke.
+"""
 import struct, zlib, math, os
 
 def lerp(a, b, t): return a + (b - a) * t
@@ -11,97 +18,105 @@ def smooth(e0, e1, x):
     return t * t * (3 - 2 * t)
 
 def sdf_cap(px, py, ax, ay, bx, by, r):
-    """Capsule SDF: thick line segment with round caps. Negative = inside."""
+    """Capsule SDF (fat line with round ends). Negative = inside."""
     dx, dy = bx - ax, by - ay
     d2 = dx*dx + dy*dy
     t = cl01(((px-ax)*dx + (py-ay)*dy) / d2) if d2 else 0.0
     qx, qy = px - ax - t*dx, py - ay - t*dy
     return math.sqrt(qx*qx + qy*qy) - r
 
-def sdf_rrect(px, py, cx, cy, hw, hh, r):
-    """Rounded-rectangle SDF. Negative = inside."""
-    dx = max(0.0, abs(px - cx) - max(0.0, hw - r))
-    dy = max(0.0, abs(py - cy) - max(0.0, hh - r))
-    return math.sqrt(dx*dx + dy*dy) - r
-
 def make_icon(path, S):
     BG  = (3,   3,  16)
-    C1  = (0,  212, 255)   # #00D4FF cyber-blue
-    C2  = (123, 47, 255)   # #7B2FFF cyber-purple
-    GRN = (0,  255, 148)   # #00FF94 neon-green
+    C1  = (0,  212, 255)   # #00D4FF  cyber-blue
+    C2  = (123, 47, 255)   # #7B2FFF  cyber-purple
+    GRN = (0,  255, 148)   # #00FF94  neon-green
 
     f = float(S)
 
-    # ── Z geometry ────────────────────────────────────────────────────────────
-    lf, rt = f * 0.10, f * 0.90       # left / right edges
-    tp, bt = f * 0.08, f * 0.74       # top / bottom of Z
-    bar    = (bt - tp) * 0.195        # bar thickness
-    rz     = bar * 0.48               # corner radius ≈ half-bar → stadium ends
-    aa     = 1.5                       # anti-alias band (px)
-    glow   = bar * 0.40               # outer glow radius
+    # ─── Z as a single stroke ────────────────────────────────────────────────
+    #
+    # Path:  P0──────P1
+    #                  ╲
+    #                   ╲   (diagonal)
+    #                    ╲
+    #               P2──────P3
+    #
+    # P0 = (lf, top_y)   P1 = (rt, top_y)   ← shared with diagonal
+    # P2 = (lf, bot_y)   ← shared with diagonal   P3 = (rt, bot_y)
+    #
+    # All three capsules use the same radius r.
+    # At P1 and P2 the caps are identical circles → perfectly smooth join.
 
-    # ── .AI geometry ──────────────────────────────────────────────────────────
-    ai_y, ai_h = bt + f * 0.045, f * 0.13
-    ds  = max(2.0, ai_h / 5.0)        # period radius
-    lw  = max(4.0, ai_h * 5.0 / 9.0) # letter width
-    sp  = max(2.0, ai_h / 8.0)        # gap between glyphs
-    lk  = max(1.0, ai_h / 20.0)       # stroke radius
+    lf, rt = f * 0.11, f * 0.89
+    tp, bt = f * 0.10, f * 0.74
+    r      = (bt - tp) * 0.105     # stroke half-width (thickness = 21% of Z height)
+    aa     = 1.5                    # anti-alias band in pixels
+    glow   = r * 0.9               # soft outer glow radius
+
+    top_y  = tp + r                # centerline of top bar
+    bot_y  = bt - r                # centerline of bottom bar
+
+    # ─── .AI glyphs ──────────────────────────────────────────────────────────
+    ai_y  = bt + f * 0.045
+    ai_h  = f * 0.125
+    ds    = max(1.5, ai_h / 5.5)        # period circle radius
+    lw    = max(4.0, ai_h * 5.0 / 9.0) # letter width
+    sp    = max(2.0, ai_h / 8.0)        # gap between glyphs
+    lk    = max(0.8, ai_h / 22.0)       # stroke radius for A and I
 
     total_ai = ds*2 + sp + lw + sp + lw
-    ax0 = (f - total_ai) / 2.0        # left edge of .AI block
+    ax0   = (f - total_ai) / 2.0
 
-    # Period
+    # "."
     dot_cx = ax0 + ds
     dot_cy = ai_y + ai_h - ds
 
-    # A
-    aa_x  = ax0 + ds*2 + sp
-    apex  = (aa_x + lw/2, ai_y)
-    bl    = (aa_x,        ai_y + ai_h)
-    br    = (aa_x + lw,   ai_y + ai_h)
-    # crossbar at 50% — spans exactly where the legs are at that height
+    # "A"
+    A_lf  = ax0 + ds*2 + sp
+    apex  = (A_lf + lw/2, ai_y)
+    A_bl  = (A_lf,        ai_y + ai_h)
+    A_br  = (A_lf + lw,   ai_y + ai_h)
     cb_y  = ai_y + ai_h * 0.50
-    t_cb  = 0.5
-    cb_x0 = apex[0] + t_cb * (bl[0] - apex[0])
-    cb_x1 = apex[0] + t_cb * (br[0] - apex[0])
+    cb_x0 = apex[0] + 0.5 * (A_bl[0] - apex[0])  # left leg x at 50%
+    cb_x1 = apex[0] + 0.5 * (A_br[0] - apex[0])  # right leg x at 50%
 
-    # I
-    ii_x   = aa_x + lw + sp
-    ii_cx  = ii_x + lw / 2
-    sw     = max(lk * 1.5, lw / 3.5)  # serif half-width
+    # "I"
+    I_lf  = A_lf + lw + sp
+    I_cx  = I_lf + lw / 2
+    sw    = max(lk * 1.5, lw / 3.5)   # serif half-width
 
-    # ── SDF functions ─────────────────────────────────────────────────────────
+    # ─── SDFs ────────────────────────────────────────────────────────────────
     def z_sdf(px, py):
         return min(
-            sdf_rrect(px, py, (lf+rt)/2, tp+bar/2, (rt-lf)/2, bar/2, rz),  # top bar
-            sdf_rrect(px, py, (lf+rt)/2, bt-bar/2, (rt-lf)/2, bar/2, rz),  # bottom bar
-            sdf_cap  (px, py, rt, tp+bar, lf, bt-bar, rz),                  # diagonal
+            sdf_cap(px, py, lf,  top_y, rt,  top_y, r),   # top bar
+            sdf_cap(px, py, rt,  top_y, lf,  bot_y, r),   # diagonal  (shares P1 with top bar, P2 with bot bar)
+            sdf_cap(px, py, lf,  bot_y, rt,  bot_y, r),   # bottom bar
         )
 
     def ai_sdf(px, py):
         return min(
-            sdf_cap(px, py, dot_cx, dot_cy, dot_cx, dot_cy, ds),               # .
-            sdf_cap(px, py, apex[0],apex[1], bl[0],bl[1], lk),                 # A left leg
-            sdf_cap(px, py, apex[0],apex[1], br[0],br[1], lk),                 # A right leg
-            sdf_cap(px, py, cb_x0, cb_y, cb_x1, cb_y, lk),                    # A crossbar
-            sdf_cap(px, py, ii_cx, ai_y,    ii_cx, ai_y+ai_h, lk),            # I stem
-            sdf_cap(px, py, ii_cx-sw, ai_y,    ii_cx+sw, ai_y,    lk),        # I top serif
-            sdf_cap(px, py, ii_cx-sw, ai_y+ai_h, ii_cx+sw, ai_y+ai_h, lk),   # I bot serif
+            sdf_cap(px, py, dot_cx,   dot_cy,   dot_cx,   dot_cy,   ds),  # .  (circle)
+            sdf_cap(px, py, apex[0],  apex[1],  A_bl[0],  A_bl[1],  lk),  # A left leg
+            sdf_cap(px, py, apex[0],  apex[1],  A_br[0],  A_br[1],  lk),  # A right leg
+            sdf_cap(px, py, cb_x0,    cb_y,     cb_x1,    cb_y,     lk),  # A crossbar
+            sdf_cap(px, py, I_cx,     ai_y,     I_cx,     ai_y+ai_h, lk), # I stem
+            sdf_cap(px, py, I_cx-sw,  ai_y,     I_cx+sw,  ai_y,     lk),  # I top serif
+            sdf_cap(px, py, I_cx-sw,  ai_y+ai_h, I_cx+sw, ai_y+ai_h, lk),# I bot serif
         )
 
     def grad(px, py):
         t = cl01(0.35*(px-lf)/(rt-lf) + 0.65*(py-tp)/(bt-tp))
-        return (cl255(lerp(C1[0],C2[0],t)),
-                cl255(lerp(C1[1],C2[1],t)),
-                cl255(lerp(C1[2],C2[2],t)))
+        return (cl255(lerp(C1[0], C2[0], t)),
+                cl255(lerp(C1[1], C2[1], t)),
+                cl255(lerp(C1[2], C2[2], t)))
 
-    # ── Pixel buffer ──────────────────────────────────────────────────────────
+    # ─── Render ──────────────────────────────────────────────────────────────
     img = [[list(BG) for _ in range(S)] for _ in range(S)]
 
     def paint(x, y, color, a=1.0):
         if 0 <= x < S and 0 <= y < S:
             for i in range(3):
-                img[y][x][i] = cl255(img[y][x][i] * (1-a) + color[i] * a)
+                img[y][x][i] = cl255(img[y][x][i]*(1-a) + color[i]*a)
 
     ai_band_top = ai_y - aa - 2
     ai_band_bot = ai_y + ai_h + aa + 2
@@ -110,7 +125,6 @@ def make_icon(path, S):
         for x in range(S):
             px, py = x + 0.5, y + 0.5
 
-            # Z with anti-aliased edges + soft outer glow
             dz = z_sdf(px, py)
             if dz < 0:
                 paint(x, y, grad(px, py))
@@ -118,9 +132,8 @@ def make_icon(path, S):
                 paint(x, y, grad(px, py), 1.0 - smooth(0, aa, dz))
             elif dz <= glow:
                 g = grad(px, py)
-                paint(x, y, (g[0]//6, g[1]//6, g[2]//6), (1-dz/glow)**2 * 0.22)
+                paint(x, y, (g[0]//7, g[1]//7, g[2]//7), (1 - dz/glow)**2 * 0.25)
 
-            # .AI — only check pixels in the relevant band
             if ai_band_top <= py <= ai_band_bot:
                 da = ai_sdf(px, py)
                 if da < 0:
@@ -128,7 +141,7 @@ def make_icon(path, S):
                 elif da <= aa:
                     paint(x, y, GRN, 1.0 - smooth(0, aa, da))
 
-    # ── PNG encode ────────────────────────────────────────────────────────────
+    # ─── PNG encode ──────────────────────────────────────────────────────────
     def chunk(ct, data):
         raw = ct + data
         return struct.pack('>I', len(data)) + raw + struct.pack('>I', zlib.crc32(raw) & 0xffffffff)
