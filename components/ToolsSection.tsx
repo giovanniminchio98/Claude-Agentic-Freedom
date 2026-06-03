@@ -1,7 +1,8 @@
 "use client";
 
 import { featuredTools } from "@/lib/content";
-import { Github, ExternalLink } from "lucide-react";
+import type { Tool } from "@/lib/content";
+import { Github, ArrowUpRight } from "lucide-react";
 
 export default function ToolsSection() {
   return (
@@ -24,7 +25,7 @@ export default function ToolsSection() {
             Tools &amp; <span className="neon-text-purple">Frameworks</span>
           </h2>
           <p className="text-white/50 max-w-lg mx-auto font-body text-sm leading-relaxed">
-            The essential open-source stack for building agentic AI systems in production.
+            The essential open-source stack. Click any card to open the project.
           </p>
         </div>
 
@@ -34,7 +35,6 @@ export default function ToolsSection() {
           ))}
         </div>
 
-        {/* More tools CTA */}
         <div className="mt-10 text-center">
           <div className="font-mono text-xs text-white/30 tracking-widest uppercase">
             40+ tools · frameworks · libraries · APIs · coming soon
@@ -45,30 +45,34 @@ export default function ToolsSection() {
   );
 }
 
-function ToolCard({ tool }: { tool: (typeof featuredTools)[number] }) {
+function ToolCard({ tool }: { tool: Tool }) {
   return (
-    <div className="glass-card p-5 group cursor-pointer relative overflow-hidden">
-      {/* Category chip */}
+    <a
+      href={tool.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="glass-card p-5 group cursor-pointer relative overflow-hidden block"
+    >
       <div className="flex items-center justify-between mb-4">
         <span className="font-mono text-xs px-2 py-0.5 rounded-sm bg-cyber-purple/10 border border-cyber-purple/20 text-cyber-purple/80">
           {tool.category}
         </span>
-        {tool.isOpenSource && (
-          <Github className="w-3.5 h-3.5 text-white/30 group-hover:text-cyber-purple transition-colors" />
-        )}
+        <div className="flex items-center gap-1.5">
+          {tool.isOpenSource && (
+            <Github className="w-3.5 h-3.5 text-white/30 group-hover:text-cyber-purple transition-colors" />
+          )}
+          <ArrowUpRight className="w-3.5 h-3.5 text-white/20 group-hover:text-cyber-purple transition-colors" />
+        </div>
       </div>
 
-      {/* Name */}
       <h3 className="font-display font-bold text-sm tracking-wider uppercase text-white/90 mb-3 group-hover:text-cyber-purple transition-colors duration-200">
         {tool.name}
       </h3>
 
-      {/* Description */}
       <p className="text-white/45 text-xs leading-relaxed font-body mb-4">
         {tool.description}
       </p>
 
-      {/* Tags */}
       <div className="flex flex-wrap gap-1.5">
         {tool.tags.map((tag) => (
           <span
@@ -80,10 +84,12 @@ function ToolCard({ tool }: { tool: (typeof featuredTools)[number] }) {
         ))}
       </div>
 
-      {/* Hover glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ background: "radial-gradient(circle at 50% 0%, rgba(123,47,255,0.08), transparent 70%)" }}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle at 50% 0%, rgba(123,47,255,0.08), transparent 70%)",
+        }}
       />
-    </div>
+    </a>
   );
 }

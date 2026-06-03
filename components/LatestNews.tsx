@@ -1,6 +1,7 @@
 "use client";
 
 import { latestNews } from "@/lib/content";
+import type { NewsItem } from "@/lib/content";
 import { ExternalLink, Radio } from "lucide-react";
 
 export default function LatestNews() {
@@ -29,7 +30,7 @@ export default function LatestNews() {
             </h2>
           </div>
           <p className="text-white/40 font-mono text-xs max-w-xs leading-relaxed">
-            Curated daily. The agentic AI landscape moves fast — stay current.
+            Curated daily. Click any item to open the source.
           </p>
         </div>
 
@@ -39,7 +40,6 @@ export default function LatestNews() {
           ))}
         </div>
 
-        {/* Coming soon strip */}
         <div className="mt-8 glass-card p-4 flex items-center gap-3 border-neon-green/10">
           <div className="w-1 h-12 bg-gradient-to-b from-neon-green to-cyber-blue rounded-full" />
           <div>
@@ -57,44 +57,36 @@ export default function LatestNews() {
   );
 }
 
-function NewsRow({
-  item,
-  index,
-}: {
-  item: (typeof latestNews)[number];
-  index: number;
-}) {
+function NewsRow({ item, index }: { item: NewsItem; index: number }) {
+  const El = item.url ? "a" : "div";
+  const linkProps = item.url
+    ? { href: item.url, target: "_blank", rel: "noopener noreferrer" }
+    : {};
+
   return (
-    <div
-      className="glass-card p-5 group flex gap-5 items-start cursor-pointer"
-      style={{ animationDelay: `${index * 0.1}s` }}
+    <El
+      {...linkProps}
+      className="glass-card p-5 group flex gap-5 items-start cursor-pointer block"
     >
-      {/* Index */}
       <div className="font-display text-2xl font-black text-white/10 group-hover:text-neon-green/30 transition-colors w-8 flex-shrink-0">
         {String(index + 1).padStart(2, "0")}
       </div>
 
       <div className="flex-1 min-w-0">
-        {/* Source + date */}
         <div className="flex items-center gap-3 mb-2">
-          <span className="font-mono text-xs text-neon-green/70">
-            {item.source}
-          </span>
+          <span className="font-mono text-xs text-neon-green/70">{item.source}</span>
           <span className="text-white/20 text-xs">·</span>
           <span className="font-mono text-xs text-white/30">{item.date}</span>
         </div>
 
-        {/* Title */}
         <h3 className="font-display font-bold text-xs tracking-wider uppercase text-white/85 mb-2 group-hover:text-neon-green transition-colors duration-200 leading-relaxed">
           {item.title}
         </h3>
 
-        {/* Summary */}
         <p className="text-white/40 text-xs leading-relaxed font-body mb-3">
           {item.summary}
         </p>
 
-        {/* Tags */}
         <div className="flex flex-wrap gap-2">
           {item.tags.map((tag) => (
             <span
@@ -108,6 +100,6 @@ function NewsRow({
       </div>
 
       <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-neon-green transition-colors flex-shrink-0 mt-1" />
-    </div>
+    </El>
   );
 }

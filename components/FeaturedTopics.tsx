@@ -1,9 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { featuredTopics } from "@/lib/content";
+import type { Topic } from "@/lib/content";
+import TopicModal from "@/components/TopicModal";
 import { ArrowUpRight, Flame, Sparkles } from "lucide-react";
 
 export default function FeaturedTopics() {
+  const [selected, setSelected] = useState<Topic | null>(null);
+
   return (
     <section className="relative py-24 px-6">
       <div
@@ -26,24 +31,38 @@ export default function FeaturedTopics() {
             </h2>
           </div>
           <p className="text-white/40 font-mono text-xs max-w-xs text-right leading-relaxed">
-            Core concepts distilled into precise, actionable knowledge units.
+            Click any card to read the full explanation.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {featuredTopics.map((topic) => (
-            <TopicCard key={topic.id} topic={topic} />
+            <TopicCard
+              key={topic.id}
+              topic={topic}
+              onClick={() => setSelected(topic)}
+            />
           ))}
         </div>
       </div>
+
+      <TopicModal topic={selected} onClose={() => setSelected(null)} />
     </section>
   );
 }
 
-function TopicCard({ topic }: { topic: (typeof featuredTopics)[number] }) {
+function TopicCard({
+  topic,
+  onClick,
+}: {
+  topic: Topic;
+  onClick: () => void;
+}) {
   return (
-    <div className="glass-card p-5 group cursor-pointer relative overflow-hidden">
-      {/* Badges */}
+    <div
+      className="glass-card p-5 group cursor-pointer relative overflow-hidden"
+      onClick={onClick}
+    >
       <div className="flex items-center gap-2 mb-3">
         {topic.isHot && (
           <span className="flex items-center gap-1 font-mono text-xs px-2 py-0.5 rounded-full bg-plasma-pink/10 border border-plasma-pink/30 text-plasma-pink">
@@ -57,17 +76,14 @@ function TopicCard({ topic }: { topic: (typeof featuredTopics)[number] }) {
         )}
       </div>
 
-      {/* Title */}
       <h3 className="font-display font-bold text-xs tracking-widest uppercase text-white/90 mb-3 group-hover:text-cyber-blue transition-colors duration-200">
         {topic.title}
       </h3>
 
-      {/* Summary */}
       <p className="text-white/45 text-xs leading-relaxed font-body mb-4">
         {topic.summary}
       </p>
 
-      {/* Tags + date */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2 flex-wrap">
           {topic.tags.map((tag) => (
