@@ -1,7 +1,10 @@
 "use client";
 
 import Modal from "@/components/ui/Modal";
+import ContentToggle from "@/components/ui/ContentToggle";
 import { useProgress } from "@/hooks/useProgress";
+import { useContentMode } from "@/hooks/useContentMode";
+import { moduleEasyContent } from "@/lib/easyContent";
 import type { LearningPath } from "@/lib/content";
 import { CheckCircle2, Circle, Clock, ChevronDown } from "lucide-react";
 import { useState } from "react";
@@ -13,6 +16,7 @@ interface PathModalProps {
 
 export default function PathModal({ path, onClose }: PathModalProps) {
   const { completed, toggle, loaded } = useProgress();
+  const { mode, toggle: setMode } = useContentMode();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (!path) return null;
@@ -23,6 +27,11 @@ export default function PathModal({ path, onClose }: PathModalProps) {
   return (
     <Modal open={!!path} onClose={onClose} maxWidth="max-w-2xl">
       <div className="p-6">
+        {/* Mode toggle */}
+        <div className="flex justify-end mb-4">
+          <ContentToggle mode={mode} onChange={setMode} />
+        </div>
+
         {/* Header */}
         <div className="flex items-start gap-4 mb-6">
           <span
@@ -156,7 +165,10 @@ export default function PathModal({ path, onClose }: PathModalProps) {
                       {mod.summary}
                     </p>
                     <div className="space-y-3">
-                      {mod.content.map((para, pi) => (
+                      {(mode === "easy" && moduleEasyContent[mod.id]
+                        ? moduleEasyContent[mod.id]
+                        : mod.content
+                      ).map((para, pi) => (
                         <p key={pi} className="text-white/70 text-xs font-body leading-relaxed">
                           {para}
                         </p>

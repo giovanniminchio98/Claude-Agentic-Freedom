@@ -1,6 +1,9 @@
 "use client";
 
 import Modal from "@/components/ui/Modal";
+import ContentToggle from "@/components/ui/ContentToggle";
+import { useContentMode } from "@/hooks/useContentMode";
+import { topicEasyContent } from "@/lib/easyContent";
 import type { Topic } from "@/lib/content";
 import { ExternalLink } from "lucide-react";
 
@@ -10,11 +13,23 @@ interface TopicModalProps {
 }
 
 export default function TopicModal({ topic, onClose }: TopicModalProps) {
+  const { mode, toggle: setMode } = useContentMode();
+
   if (!topic) return null;
+
+  const content =
+    mode === "easy" && topicEasyContent[topic.id]
+      ? topicEasyContent[topic.id]
+      : topic.content;
 
   return (
     <Modal open={!!topic} onClose={onClose} maxWidth="max-w-xl">
       <div className="p-6">
+        {/* Mode toggle */}
+        <div className="flex justify-end mb-4">
+          <ContentToggle mode={mode} onChange={setMode} />
+        </div>
+
         {/* Badges */}
         <div className="flex gap-2 mb-4">
           {topic.tags.map((tag) => (
@@ -43,7 +58,7 @@ export default function TopicModal({ topic, onClose }: TopicModalProps) {
 
         {/* Content paragraphs */}
         <div className="space-y-4">
-          {topic.content.map((para, i) => (
+          {content.map((para, i) => (
             <p key={i} className="text-white/70 text-sm font-body leading-relaxed">
               {para}
             </p>

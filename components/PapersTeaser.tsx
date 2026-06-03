@@ -4,10 +4,14 @@ import { papers } from "@/lib/content";
 import type { Paper } from "@/lib/content";
 import { useState } from "react";
 import Modal from "@/components/ui/Modal";
+import ContentToggle from "@/components/ui/ContentToggle";
+import { useContentMode } from "@/hooks/useContentMode";
+import { paperEasyContent } from "@/lib/easyContent";
 import { FileText, ArrowUpRight, ExternalLink } from "lucide-react";
 
 export default function PapersTeaser() {
   const [selected, setSelected] = useState<Paper | null>(null);
+  const { mode, toggle: setMode } = useContentMode();
 
   return (
     <section id="papers" className="relative py-24 px-6">
@@ -68,6 +72,9 @@ export default function PapersTeaser() {
       <Modal open={!!selected} onClose={() => setSelected(null)} maxWidth="max-w-lg">
         {selected && (
           <div className="p-6">
+            <div className="flex justify-end mb-4">
+              <ContentToggle mode={mode} onChange={setMode} />
+            </div>
             <div
               className="inline-flex items-center gap-1.5 font-mono text-xs px-2 py-0.5 rounded-sm mb-4"
               style={{
@@ -90,7 +97,9 @@ export default function PapersTeaser() {
             </div>
             <div className="h-px mb-5" style={{ background: `linear-gradient(90deg, ${selected.color}40, transparent)` }} />
             <p className="text-white/65 text-sm font-body leading-relaxed mb-6">
-              {selected.abstract}
+              {mode === "easy" && paperEasyContent[selected.id]
+                ? paperEasyContent[selected.id]
+                : selected.abstract}
             </p>
             <div className="flex flex-wrap gap-2 mb-6">
               {selected.tags.map((tag) => (
