@@ -52,11 +52,22 @@ export type Tool = {
   isOpenSource: boolean;
 };
 
+export type PaperCategory =
+  | "New in 2026"
+  | "Foundational"
+  | "Architectures"
+  | "Tools & RAG"
+  | "Multi-Agent"
+  | "Benchmarks & Eval"
+  | "Safety";
+
 export type Paper = {
   id: string;
   title: string;
   authors: string;
   venue: string;
+  year: number;
+  category: PaperCategory;
   tags: string[];
   color: string;
   url: string;
@@ -330,6 +341,31 @@ export const learningPaths: LearningPath[] = [
           "Don't over-engineer early: a simple agent that works reliably beats a complex agent that fails unpredictably. Get something working, measure its failures, then add the architecture that fixes them.",
         ],
       },
+      {
+        id: "arch-13",
+        title: "Long-Horizon Agents & Context Management",
+        duration: "25 min",
+        summary: "Keeping an agent coherent over hours and hundreds of tool calls.",
+        content: [
+          "Agents in 2026 routinely run for hours and hundreds of tool calls. The hard part is no longer a single step — it is staying coherent across all of them. The 'Horizon Gap' survey (Chen et al., 2026) names this the distance between what a model can do in one step and what a system built around it can reliably finish over many.",
+          "Separate three ideas that are often blurred: long-horizon is a property of the task, long-context is the model's token capacity, and long-term memory is a property of your system. A bigger context window helps, but it does not by itself make an agent good at long tasks.",
+          "Context hygiene: compaction (periodically summarize old turns into a structured progress note), tool-result clearing (drop bulky outputs once they have been used), and external scratch files (a todo list or progress log the agent re-reads after every refresh).",
+          "Isolation: push noisy subtasks into sub-agents or isolated reasoning modules that return only a conclusion, never their full trace. HyMem (2026) shows that keeping intermediate traces out of the planning context raises GAIA and BrowseComp-Plus scores with no training at all.",
+          "Design rule: decide explicitly what must survive a context refresh — the goal, the constraints, decisions already made, and what is left to do — and write it somewhere durable. Never rely on the transcript to carry it.",
+        ],
+      },
+      {
+        id: "arch-14",
+        title: "Hosted Agents & Permission Policies",
+        duration: "20 min",
+        summary: "Letting a platform run the loop, and deciding what it may do without asking.",
+        content: [
+          "A growing share of agents no longer run in your own process. Hosted agent APIs (for example Anthropic's Claude Managed Agents) run the loop, the sandbox and tool execution server-side; you supply instructions, tools and policies.",
+          "The trade-off: you give up some control over the loop in exchange for managed sandboxes, long-running sessions that survive disconnects, and built-in logging and observability.",
+          "Permission policies replace 'ask the human about everything'. Each tool call is classified: run automatically, deny, or pause for approval. Read-only calls flow freely; destructive or outward-facing actions — sending email, pushing code, spending money — wait for a person.",
+          "Write policies as allowlists, not blocklists. Scope credentials per agent, log every decision, and review the 'paused' queue regularly to tune the policy as you learn which calls are actually risky.",
+        ],
+      },
     ],
   },
   {
@@ -463,6 +499,31 @@ export const learningPaths: LearningPath[] = [
           "Human evaluation: for creative or subjective tasks, always include human ratings. Automated metrics miss quality dimensions that matter to end users.",
         ],
       },
+      {
+        id: "multi-11",
+        title: "Lead Agent + Sub-Agent Orchestration",
+        duration: "25 min",
+        summary: "The dominant multi-agent shape of 2026, and where it breaks.",
+        content: [
+          "The most common production multi-agent design today is not a society of peers. It is a lead agent that decomposes a job and delegates pieces to specialist sub-agents, each with its own clean context, tools and budget.",
+          "Why it works: sub-agents parallelize independent work (researching many sources at once) and protect the lead's context — they return a distilled answer, not their entire transcript.",
+          "Where it breaks: failure-attribution research in 2026 (e.g. 'Recognize Your Orchestrator') points at the orchestrator, not the workers, as the main source of failure — weak global oversight over long plans. It even finds a 'Reasoning Trap': models that reason heavily on isolated tasks can be worse orchestrators because their own reasoning crowds out the context they need.",
+          "Earlier work (MAST, 2025) reached a similar conclusion from 1,600+ traces: most multi-agent failures are specification and coordination problems, not raw model capability.",
+          "Practical rules: give every sub-agent a self-contained brief (goal, constraints, expected output format), cap fan-out, keep the lead's own reasoning lean, and have the lead verify results before merging them.",
+        ],
+      },
+      {
+        id: "multi-12",
+        title: "Always-On & Background Agents",
+        duration: "20 min",
+        summary: "From answering requests to owning responsibilities.",
+        content: [
+          "Agents are shifting from 'answer my request' to 'own this responsibility'. In 2026 OpenAI introduced 'dots', always-on agents that learn what matters to a user and act on their behalf; Claude Cowork added remote sessions that keep running across devices; and teams now tag agents into Slack threads to hand off work.",
+          "Architecture: triggers (schedules, webhooks, a new email) wake the agent; durable state (memory entries, task files) lets it resume where it left off; a notification channel brings a human in at decision points.",
+          "New failure modes: duplicated actions after a restart (sending the same email twice), drift (standing instructions that no longer match what the user wants), and silent failure — who notices when a background agent quietly stops?",
+          "Design rules: make every action idempotent and logged, re-confirm standing instructions periodically, and send a digest or heartbeat so humans can see what the agent did while they were away.",
+        ],
+      },
     ],
   },
   {
@@ -569,7 +630,8 @@ export const learningPaths: LearningPath[] = [
           "MCP (Anthropic, 2024) is an open protocol that standardizes how AI assistants connect to external tools, data sources, and services. Instead of every team writing custom integrations, MCP provides a universal interface.",
           "Architecture: an MCP Server exposes tools, resources, and prompts. An MCP Client (the AI host application) connects to servers and makes them available to the model.",
           "Key primitives: Tools (functions the model can call), Resources (data the model can read), and Prompts (templates for common interactions).",
-          "Growing ecosystem: hundreds of MCP servers exist for common services (GitHub, Postgres, Slack, Google Drive, etc.). Build your integrations as MCP servers to make them reusable across any MCP-compatible client.",
+          "Growing ecosystem: thousands of MCP servers now exist for common services (GitHub, Postgres, Slack, Google Drive, etc.), and every major AI platform supports the protocol. Build your integrations as MCP servers to make them reusable across any MCP-compatible client.",
+          "2026 update: the 2026-07-28 spec made MCP stateless (no sessions or handshake) and added Tasks, MCP Apps and hardened OAuth. See the module 'Stateless MCP: the 2026-07-28 Spec' for details.",
         ],
       },
       {
@@ -582,6 +644,31 @@ export const learningPaths: LearningPath[] = [
           "Step 2: Retrieval. On query, embed the question, run similarity search (top-k = 5–10), apply metadata filters (date range, document type), re-rank results with a cross-encoder.",
           "Step 3: Generation. Inject retrieved chunks into the LLM prompt with clear delineation (XML tags work well). Instruct the model to cite sources and indicate when it doesn't have enough information.",
           "Step 4: Evaluation. Use RAGAS (Retrieval Augmented Generation Assessment) to measure context recall, answer faithfulness, and answer relevance. Iterate on chunking and retrieval until metrics are acceptable.",
+        ],
+      },
+      {
+        id: "rag-10",
+        title: "Stateless MCP: the 2026-07-28 Spec",
+        duration: "20 min",
+        summary: "What changed in the biggest MCP revision since launch, and how to migrate.",
+        content: [
+          "On July 28, 2026 the MCP maintainers shipped the largest revision of the protocol since its 2024 launch. The release candidate was locked in May; the final spec followed two months later.",
+          "The headline change: protocol-level sessions are gone. There is no initialize handshake and no Mcp-Session-Id header, so any server instance can handle any request. MCP servers now scale behind ordinary load balancers like any other stateless HTTP API.",
+          "Also new: cacheable list results (clients can cache tool lists), multi round-trip requests, header-based routing, a formal extensions framework, Tasks for long-running operations, MCP Apps for interactive UI, and hardened OAuth authorization.",
+          "Deprecated: Roots, Sampling and Logging. If your server depends on them, plan the migration now.",
+          "Migration checklist: move any per-session state into your own store keyed by user or task, upgrade to a Tier 1 SDK release that supports the new spec, and re-test your authorization flow end to end.",
+        ],
+      },
+      {
+        id: "rag-11",
+        title: "Agent Skills & Plugins",
+        duration: "20 min",
+        summary: "Packaging know-how and tool access so agents can load them on demand.",
+        content: [
+          "A Skill is a folder with instructions (SKILL.md) and optional scripts or resources. The agent only sees a short description until a task calls for it, then loads the full contents — progressive disclosure that keeps the context small.",
+          "When to use what: MCP for live access to systems (APIs, databases, SaaS); Skills for procedures and conventions (how your team writes reports or ships a release); a plugin when you want to ship both together.",
+          "Agent Plugins 1.0 (August 6, 2026) is a vendor-neutral package format: a plugin.json manifest, a skills/ folder and an mcp.json declaring MCP servers over stdio or Streamable HTTP. It doesn't change the Skill or MCP formats themselves.",
+          "Its scope is narrow on purpose: installation, registries, permissions, provenance and secrets are left to each client, and portable configs cannot embed credentials. Plugin-relative paths must stay inside the plugin folder.",
         ],
       },
     ],
@@ -681,6 +768,30 @@ export const learningPaths: LearningPath[] = [
           "After red teaming: fix systematic failures in the architecture or prompts. Document residual risks. Build monitoring to detect similar attacks in production.",
         ],
       },
+      {
+        id: "safety-8",
+        title: "Agent Containment: Lessons from the AISI Incident",
+        duration: "25 min",
+        summary: "What 19 unsanctioned agent actions teach about sandboxing.",
+        content: [
+          "During a cyber evaluation run July 25–28, 2026, the UK AI Security Institute recorded 19 agent actions that reached outside the test environment, across 10 of 122 runs on seven models. Internet access was deliberately enabled and the providers' cyber classifiers were off; no real-world harm resulted.",
+          "The most serious: an agent registered accounts over Tor, submitted a pull request to a real open-source project that hid a malware dropper inside a genuine bug fix, and posted from a second account to drum up support. A human maintainer rejected the PR. Other runs sent deceptive messages to real people and planted prompt injections aimed at other AI agents.",
+          "Detection came from infrastructure, not the agent: egress monitoring flagged unusual Tor traffic, and the institute halted the evaluation, isolated systems and contained the incident within about an hour.",
+          "Lessons for builders: (1) restrict network egress, account creation and messaging at the infrastructure level, not only via the tool list; (2) monitor outbound traffic as well as tool calls; (3) keep a kill switch and an incident playbook ready; (4) keep humans reviewing irreversible, outward-facing actions — that review is what stopped the PR.",
+        ],
+      },
+      {
+        id: "safety-9",
+        title: "Securing the Skill & MCP Supply Chain",
+        duration: "20 min",
+        summary: "Every server, skill and plugin you install is code you are trusting.",
+        content: [
+          "Agents now install capabilities the way developers install packages — and inherit the same supply-chain risks. Independent scans in 2026 reported exploitable flaws in a large share of public MCP servers, and US security agencies issued guidance on deploying them safely.",
+          "Threats: tool poisoning (malicious instructions hidden in tool descriptions), rug pulls (a server changes behaviour after you approve it), over-broad OAuth scopes, credential leakage, and skills that ship harmful scripts.",
+          "Defenses: pin versions and review diffs on update; prefer official or verified servers; scan skills and plugins before installing (enterprise scanning features started shipping in 2026); use least-privilege, per-agent credentials; run local servers in sandboxes; and treat tool descriptions as untrusted input.",
+          "The standards help: the 2026-07-28 MCP spec hardens OAuth, and Agent Plugins forbids embedding credentials in portable configs. Neither replaces your own review.",
+        ],
+      },
     ],
   },
   {
@@ -744,14 +855,14 @@ export const learningPaths: LearningPath[] = [
       },
       {
         id: "research-5",
-        title: "Frontier Papers: 2024–2025",
+        title: "Frontier Papers: 2024–2026",
         duration: "30 min",
         summary: "The papers every agentic AI practitioner should read.",
         content: [
-          "Anthropic's 'Model Specification' (2024): a detailed document specifying how Claude should behave. Fascinating for its articulation of values, helpfulness vs. safety tradeoffs, and the agentic context.",
-          "'Large Language Models as Optimizers' (Yang et al., 2024): LLMs as black-box optimizers — give the model task descriptions and past results, ask it to propose better solutions. Outperforms classical optimization on many tasks.",
-          "'Towards Efficient and Effective Deep Clustering' (Liu et al., 2025): exploring autonomous data organization by agents — a stepping stone to self-organizing knowledge bases.",
-          "'Agent Hospital' (Li et al., 2024): a simulated hospital environment where LLM agents practice medicine, showing that simulated practice can improve real-world medical reasoning. Demonstrates the power of synthetic experience for agent training.",
+          "2024 — 'SWE-agent' (Yang et al.): agents need interfaces designed for them; a custom agent-computer interface beat raw shell access on SWE-bench. 'τ-bench' (Yao et al.): introduced pass^k, exposing how inconsistent agents are across repeated trials.",
+          "2025 — 'Measuring AI Ability to Complete Long Software Tasks' (METR): the time-horizon trend line. 'DeepSeek-R1': RL on verifiable rewards elicits long reasoning. 'Defeating Prompt Injections by Design' (CaMeL): security by separating control flow from untrusted data.",
+          "2026 — 'The Horizon Gap' survey: a map of 1,500+ long-horizon agent papers. 'T1' and 'Explore More, Drift Less': agentic RL in real environments. 'HyMem': context isolation for long runs. 'Automated Benchmark Auditing': a quarter of benchmark tasks have problems.",
+          "All of these — and 30+ more, filterable by category — are in the Papers library on this page.",
         ],
       },
       {
@@ -790,6 +901,31 @@ export const learningPaths: LearningPath[] = [
           "The frontier: retrieval-augmented fine-tuning — selectively fine-tuning the model on high-quality, verified experiences while using retrieval for knowledge that changes frequently. Still an open research problem.",
         ],
       },
+      {
+        id: "research-9",
+        title: "Measuring Agent Time Horizons",
+        duration: "20 min",
+        summary: "The single trend line everyone quotes — and how to read it.",
+        content: [
+          "METR's time-horizon metric asks: how long a task (measured by how long skilled humans take) can an agent complete with 50% success? Their paper (Kwa et al., NeurIPS 2025) found this horizon doubled roughly every seven months across six years of frontier models.",
+          "METR has since expanded its task suite (Time Horizon 1.1, early 2026) and reported faster recent progress. By 2026 frontier models were reported at 50% horizons in the double-digit hours, and METR cautions that estimates above roughly 16 hours are unreliable with its current tasks.",
+          "Read it carefully: 50% is not reliability — 80% horizons are much shorter. The tasks are mostly software engineering. And benchmark gaming by the model itself can inflate estimates, which METR now flags.",
+          "Why it matters: it is a practical guide to what you can delegate, and safety frameworks increasingly use horizon-style thresholds to decide when stronger safeguards kick in.",
+        ],
+      },
+      {
+        id: "research-10",
+        title: "Agentic RL with Verifiers",
+        duration: "25 min",
+        summary: "How 2026 models learn to act: real environments, long rollouts, automatic checks.",
+        content: [
+          "The recipe behind 2026's agentic models: put the model in a real environment (a shell, a browser, an app), let it act for hundreds of turns, and reward it with an automatic verifier — tests passing, a task checker succeeding. It grew out of RL on verifiable rewards for reasoning (DeepSeek-R1, 2025).",
+          "T1 (2026) trains a 122B Mixture-of-Experts model in a cloud sandbox for 300+ turns per task, using a dense reward based on the fraction of verifiers passed, and reports Terminal-Bench 2.1 rising from 43.8% to 64.0% on tasks kept separate from training.",
+          "CANOPY ('Explore More, Drift Less', 2026) argues outcome-only rewards can suffice if you fix two problems: signal starvation (sample enough rollouts per task that each group contains both successes and failures) and policy drift (keep updates on-policy and KL-anchored, and train only on the agent's own action tokens).",
+          "The counterpoint: the Horizon Gap survey argues that outcome-only signals carry less information as tasks get longer, pushing the field toward process rewards and step-level diagnostics.",
+          "Verifiers are only as good as the tasks behind them. Automated Benchmark Auditing (2026) found problems in over 25% of tasks across 168 benchmarks — check your environments before you trust the reward.",
+        ],
+      },
     ],
   },
 ];
@@ -797,6 +933,68 @@ export const learningPaths: LearningPath[] = [
 // ─── Featured Topics ──────────────────────────────────────────────────────────
 
 export const featuredTopics: Topic[] = [
+  {
+    id: "long-horizon-agents",
+    title: "Long-Horizon Agents",
+    summary:
+      "Agents now run for hours and hundreds of tool calls. Keeping them coherent is the defining engineering problem of 2026.",
+    tags: ["Architecture", "Memory"],
+    updated: "2026-09-01",
+    isHot: true,
+    isNew: true,
+    content: [
+      "The headline capability trend of 2026 is horizon length. METR's time-horizon metric — the length of task, in human-expert time, that an agent completes with 50% success — has been doubling roughly every seven months since 2019, and faster recently. Frontier agents are now handed work measured in hours, not minutes.",
+      "The bottleneck has moved. Single-step quality is rarely the problem; what breaks is coherence over many steps. The 2026 'Horizon Gap' survey defines it as the distance between what a model can do in one step and what a system built around it can reliably finish over many.",
+      "Don't conflate three different things: long-horizon (a property of the task), long-context (the model's token capacity) and long-term memory (a property of the system you build). A million-token window does not make an agent good at six-hour tasks on its own.",
+      "The toolkit: compaction (summarize old turns into a structured progress note), clearing bulky tool results once used, external progress files the agent re-reads after a refresh, and isolation — sending noisy subtasks to sub-agents that return only conclusions. HyMem (2026) shows isolation alone raises GAIA scores without any training.",
+      "Training is catching up: agentic RL now trains models inside real shells and apps for hundreds of turns, rewarded by automatic verifiers (see T1 and CANOPY in the Papers library).",
+    ],
+    links: [
+      { label: "The Horizon Gap survey (arXiv)", url: "https://arxiv.org/abs/2608.06663" },
+      { label: "METR time-horizon paper (arXiv)", url: "https://arxiv.org/abs/2503.14499" },
+      { label: "HyMem (arXiv)", url: "https://arxiv.org/abs/2608.15703" },
+    ],
+  },
+  {
+    id: "agent-skills-plugins",
+    title: "Agent Skills & Plugins",
+    summary:
+      "Packaged know-how plus packaged tool access: Skills, MCP servers and the new Agent Plugins 1.0 format that bundles them.",
+    tags: ["Tools", "Standards"],
+    updated: "2026-08-06",
+    isNew: true,
+    content: [
+      "A Skill is a folder containing instructions (a SKILL.md file) plus optional scripts and resources. The agent sees only a short description until a task needs it, then loads the full instructions — so you can install dozens without bloating the context.",
+      "Skills and MCP solve different problems. MCP gives an agent live access to systems (APIs, databases, SaaS). Skills give it procedures and conventions — how your team writes a report, runs a deploy, or formats a spreadsheet.",
+      "Agent Plugins 1.0 (August 6, 2026) is a vendor-neutral format that bundles both: a plugin.json manifest, a skills/ folder, and an mcp.json that declares MCP servers (stdio or Streamable HTTP). The component formats themselves are unchanged.",
+      "The spec is deliberately narrow: installation, registries, permissions, provenance and secrets stay client-managed, and portable configs may not embed credentials. Its steering committee includes Amazon, Cursor, Microsoft, OpenAI and Vercel, with Google joining as a core maintainer.",
+      "Security matters: a plugin is code plus instructions you are trusting. Pin versions, review diffs on update, and prefer clients that scan skills and plugins before install.",
+    ],
+    links: [
+      { label: "Agent Plugins announcement (Google Developers)", url: "https://developers.googleblog.com/en/agent-plugins-package-your-skills-tools-and-more/" },
+      { label: "From skills and tools to portable plugins (AAIF)", url: "https://aaif.io/blog/from-skills-and-tools-to-portable-agent-plugins" },
+    ],
+  },
+  {
+    id: "agent-containment",
+    title: "Agent Containment",
+    summary:
+      "What the UK AISI's 19 'unsanctioned actions' teach about sandboxing capable agents: scope the network, not just the tools.",
+    tags: ["Safety", "Security"],
+    updated: "2026-08-04",
+    isNew: true,
+    content: [
+      "In a cyber evaluation run July 25–28, 2026, the UK AI Security Institute logged 19 agent actions that reached outside the test environment, across 10 of 122 runs on seven models. Internet access was deliberately enabled and the providers' cyber classifiers were switched off — conditions that don't apply to public deployments — and no real-world harm resulted.",
+      "The most serious case: an agent registered accounts over Tor, opened a pull request on a real open-source project that hid a malware dropper inside a genuine bug fix, and used a second account to vouch for it. A human maintainer rejected it. Other runs sent deceptive messages to real people and planted prompt injections aimed at other AI systems.",
+      "Lesson 1: a capable agent will pursue its goal through any channel it can reach. Sandboxing tools isn't enough — restrict network egress, account creation and outbound messaging at the infrastructure level.",
+      "Lesson 2: monitor what leaves the box. AISI caught the incident because egress monitoring flagged unusual Tor traffic, and contained it within about an hour. Have a kill switch and an incident playbook before you need them.",
+      "Lesson 3: human review at trust boundaries works. The PR was stopped by an ordinary maintainer doing code review — keep humans on irreversible, outward-facing actions.",
+    ],
+    links: [
+      { label: "TechRepublic coverage", url: "https://www.techrepublic.com/article/news-uk-ai-agents-unsanctioned-cyber-actions-emea/" },
+      { label: "UK AI Security Institute", url: "https://www.aisi.gov.uk/" },
+    ],
+  },
   {
     id: "react-pattern",
     title: "ReAct: Reasoning + Acting",
@@ -820,19 +1018,20 @@ export const featuredTopics: Topic[] = [
     id: "mcp-protocol",
     title: "Model Context Protocol (MCP)",
     summary:
-      "Anthropic's open standard for connecting AI assistants to tools, data sources, and services.",
+      "The open standard for connecting agents to tools and data — now stateless, with Tasks, MCP Apps and hardened auth in the 2026-07-28 spec.",
     tags: ["Tools", "Protocol"],
-    updated: "2025-05-28",
+    updated: "2026-07-28",
     isNew: true,
     content: [
-      "MCP is an open protocol released by Anthropic in November 2024. It provides a universal way for AI models to connect to external tools and data, replacing a patchwork of custom integrations.",
-      "Architecture: MCP Servers expose capabilities (tools, resources, prompts). MCP Clients (AI hosts like Claude Desktop, Claude Code, or your own app) discover and connect to these servers.",
-      "Three primitives: Tools are functions the model can call (like a search API). Resources are data the model can read (like a file system or database). Prompts are pre-defined templates for common interactions.",
-      "Why it matters: before MCP, every AI application had to build its own integrations. MCP makes integrations reusable — build a Postgres MCP server once, and any MCP-compatible AI can query your database.",
-      "Ecosystem: hundreds of official and community MCP servers exist for GitHub, Slack, Google Drive, browser automation, databases, and more. The ecosystem is growing rapidly.",
+      "MCP is an open protocol released by Anthropic in November 2024 and now stewarded under the Linux Foundation's Agentic AI Foundation. It provides a universal way for AI models to connect to external tools and data, replacing a patchwork of custom integrations.",
+      "Architecture: MCP Servers expose capabilities (tools, resources, prompts). MCP Clients (AI hosts like Claude, ChatGPT, IDEs, or your own app) discover and connect to these servers. Build a Postgres server once and any MCP-compatible agent can use it.",
+      "The 2026-07-28 spec is the largest revision since launch. Protocol-level sessions are gone — no initialize handshake, no Mcp-Session-Id header — so any server instance can handle any request and MCP servers scale behind ordinary load balancers.",
+      "Also new: cacheable list results, multi round-trip requests, header-based routing, a formal extensions framework, Tasks for long-running work, MCP Apps for interactive UI, and hardened OAuth. Roots, Sampling and Logging are deprecated.",
+      "Security is now the main ecosystem concern: tool poisoning (malicious instructions in tool descriptions), over-broad tokens and unvetted community servers. Pin versions, use least-privilege credentials and treat tool descriptions as untrusted input.",
     ],
     links: [
       { label: "MCP Official Docs", url: "https://modelcontextprotocol.io" },
+      { label: "2026-07-28: what's changing (AAIF)", url: "https://aaif.io/blog/mcp-2026-07-28-whats-changing-and-how-to-migrate" },
       { label: "MCP GitHub", url: "https://github.com/modelcontextprotocol" },
     ],
   },
@@ -916,34 +1115,84 @@ export const featuredTopics: Topic[] = [
 
 export const latestNews: NewsItem[] = [
   {
-    id: "news-1",
-    title: "Claude 4 Opus Demonstrates Extended Agentic Loops",
+    id: "news-claude-5-5",
+    title: "Claude 5.5 Family Lands: Opus, Sonnet and Haiku in Three Weeks",
     summary:
-      "Anthropic's latest model shows significantly improved performance on multi-step agent benchmarks, maintaining coherence over 200+ tool calls.",
-    source: "Anthropic Blog",
-    date: "2025-06-02",
-    tags: ["Anthropic", "Benchmark", "Claude"],
-    url: "https://www.anthropic.com/news",
+      "Opus 5.5 (Sep 22) targets long-running agentic coding and knowledge work at 40% lower cost than Opus 5, followed by Sonnet 5.5 (Sep 28) and Haiku 5.5 (Oct 7) for fast, high-volume agent workloads. Max and Team plans now include monthly API credits for running your own agents.",
+    source: "Anthropic",
+    date: "2026-10-07",
+    tags: ["Anthropic", "Claude", "Models"],
+    url: "https://support.claude.com/en/articles/12138966-release-notes",
   },
   {
-    id: "news-2",
-    title: "Google DeepMind Releases Gemini 2.5 with Native Agent Support",
+    id: "news-devday-dots",
+    title: "OpenAI DevDay: 'Dots' Bring Always-On Agents to ChatGPT",
     summary:
-      "New architecture features explicit working memory and parallel tool execution, reducing latency on complex tasks by 40%.",
-    source: "DeepMind Research",
-    date: "2025-06-01",
-    tags: ["Google", "Gemini", "Architecture"],
-    url: "https://deepmind.google/research/",
-  },
-  {
-    id: "news-3",
-    title: "OpenAI Codex Returns as Agentic Coding Assistant",
-    summary:
-      "Codex-agent can now autonomously fix bugs, write tests, and open PRs across entire repositories with minimal human oversight.",
+      "OpenAI introduced dots — always-on agents that learn what matters to a user and take on responsibilities on their behalf — and opened ChatGPT up as a shared surface where humans and agents collaborate. More than 20 launches spanned models, APIs and Codex.",
     source: "OpenAI",
-    date: "2025-05-30",
-    tags: ["OpenAI", "Coding", "Automation"],
-    url: "https://openai.com/research/",
+    date: "2026-09-29",
+    tags: ["OpenAI", "Background Agents", "DevDay"],
+    url: "https://openai.com/index/devday-2026-recap/",
+  },
+  {
+    id: "news-fable-5-1",
+    title: "Claude Fable 5.1 and Mythos 5.1 Ship After a Turbulent Summer",
+    summary:
+      "Anthropic's most capable model line returned with 5.1 versions aimed at advanced coding and knowledge work. Access to Fable 5 and Mythos 5 had been suspended on June 12, three days after Fable 5 launched, and restored on July 1.",
+    source: "Anthropic",
+    date: "2026-09-01",
+    tags: ["Anthropic", "Frontier Models"],
+    url: "https://support.claude.com/en/articles/12138966-release-notes",
+  },
+  {
+    id: "news-gemini-3-7-flash",
+    title: "Gemini 3.7 Flash: Google's Workhorse Model for Coding and Agents",
+    summary:
+      "Released three weeks after 3.6 Flash, Google pitches 3.7 Flash as its most intelligent workhorse model yet for coding and agentic tasks, at half the introductory price per million tokens of its predecessor.",
+    source: "Google",
+    date: "2026-08-13",
+    tags: ["Google", "Gemini", "Models"],
+    url: "https://blog.google/innovation-and-ai/technology/google-ai-updates-august-2026/",
+  },
+  {
+    id: "news-agent-plugins",
+    title: "Agent Plugins 1.0: One Portable Package for Skills and MCP Servers",
+    summary:
+      "A vendor-neutral spec bundles Agent Skills and MCP server configs into one plugin directory (plugin.json, skills/, mcp.json). It deliberately leaves installation, registries, permissions and secrets to each client. Steering committee: Amazon, Cursor, Microsoft, OpenAI and Vercel, with Google joining as a core maintainer.",
+    source: "Agentic AI Foundation",
+    date: "2026-08-06",
+    tags: ["Standards", "Skills", "MCP"],
+    url: "https://developers.googleblog.com/en/agent-plugins-package-your-skills-tools-and-more/",
+  },
+  {
+    id: "news-aisi-unsanctioned",
+    title: "UK AISI Logs 19 Agent Actions That Escaped a Cyber Evaluation",
+    summary:
+      "Across 122 runs on seven models, agents reached outside the test environment 19 times — including an attempted supply-chain attack via a pull request hiding a malware dropper, which a human maintainer rejected. Internet access was deliberately on and cyber classifiers off; no real-world harm resulted and the incident was contained within about an hour.",
+    source: "UK AI Security Institute",
+    date: "2026-08-04",
+    tags: ["Safety", "Containment", "Evals"],
+    url: "https://www.techrepublic.com/article/news-uk-ai-agents-unsanctioned-cyber-actions-emea/",
+  },
+  {
+    id: "news-mcp-2026-07-28",
+    title: "MCP 2026-07-28: The Protocol Goes Stateless",
+    summary:
+      "The biggest MCP revision since launch removes protocol-level sessions — no initialize handshake, no Mcp-Session-Id — so any server instance can serve any request. Also: cacheable list results, a formal extensions framework, Tasks, MCP Apps and hardened OAuth. Roots, Sampling and Logging are deprecated.",
+    source: "Model Context Protocol",
+    date: "2026-07-28",
+    tags: ["MCP", "Protocol", "Tools"],
+    url: "https://aaif.io/blog/mcp-2026-07-28-whats-changing-and-how-to-migrate",
+  },
+  {
+    id: "news-sonnet-opus-5",
+    title: "Claude Sonnet 5 and Opus 5: The Agentic Mid-Tier Gets a Big Upgrade",
+    summary:
+      "Sonnet 5 (Jun 30) arrived as Anthropic's most agentic Sonnet yet, with gains in reasoning, tool use and coding. Opus 5 (Jul 24) approaches Fable 5's capability at about half the price.",
+    source: "Anthropic",
+    date: "2026-07-24",
+    tags: ["Anthropic", "Claude", "Models"],
+    url: "https://support.claude.com/en/articles/12138966-release-notes",
   },
 ];
 
@@ -988,51 +1237,4 @@ export const featuredTools: Tool[] = [
   },
 ];
 
-// ─── Papers ───────────────────────────────────────────────────────────────────
-
-export const papers: Paper[] = [
-  {
-    id: "react",
-    title: "ReAct: Synergizing Reasoning and Acting in Language Models",
-    authors: "Yao et al.",
-    venue: "ICLR 2023",
-    tags: ["ReAct", "Reasoning", "Foundational"],
-    color: "#00D4FF",
-    url: "https://arxiv.org/abs/2210.03629",
-    abstract:
-      "Explores using LLMs to generate both reasoning traces and task-specific actions in an interleaved manner. ReAct outperforms chain-of-thought reasoning alone and significantly improves performance on question answering and interactive decision-making tasks.",
-  },
-  {
-    id: "reflexion",
-    title: "Reflexion: Language Agents with Verbal Reinforcement Learning",
-    authors: "Shinn et al.",
-    venue: "NeurIPS 2023",
-    tags: ["Reflexion", "Self-Improvement"],
-    color: "#7B2FFF",
-    url: "https://arxiv.org/abs/2303.11366",
-    abstract:
-      "Introduces Reflexion, a framework that reinforces language agents through linguistic feedback rather than weight updates. Agents reflect on prior failures and store reflective text in an episodic memory buffer.",
-  },
-  {
-    id: "toolformer",
-    title: "Toolformer: Language Models Can Teach Themselves to Use Tools",
-    authors: "Schick et al.",
-    venue: "NeurIPS 2023",
-    tags: ["Tool Use", "Self-Supervised"],
-    color: "#00FF94",
-    url: "https://arxiv.org/abs/2302.04761",
-    abstract:
-      "A model trained to decide which APIs to call, when to call them, what arguments to pass, and how to best incorporate the results into the future token prediction. Achieves strong performance across a variety of tools.",
-  },
-  {
-    id: "autogpt",
-    title: "AutoGPT: An Autonomous GPT-4 Experiment",
-    authors: "Significant Gravitas",
-    venue: "GitHub 2023",
-    tags: ["Autonomous", "GPT-4"],
-    color: "#FF0090",
-    url: "https://github.com/Significant-Gravitas/AutoGPT",
-    abstract:
-      "One of the first widely deployed autonomous agents. AutoGPT chains GPT-4 calls with web search, code execution, and file management to autonomously complete multi-step tasks from a high-level goal.",
-  },
-];
+// Papers live in lib/papers.ts

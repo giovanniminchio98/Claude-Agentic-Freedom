@@ -1,17 +1,27 @@
 "use client";
 
-import { papers } from "@/lib/content";
-import type { Paper } from "@/lib/content";
-import { useState } from "react";
+import { papers, paperCategories } from "@/lib/papers";
+import type { Paper, PaperCategory } from "@/lib/content";
+import { useMemo, useState } from "react";
 import Modal from "@/components/ui/Modal";
 import ContentToggle from "@/components/ui/ContentToggle";
 import { useContentMode } from "@/hooks/useContentMode";
 import { paperEasyContent } from "@/lib/easyContent";
 import { FileText, ArrowUpRight, ExternalLink } from "lucide-react";
 
+const INITIAL_COUNT = 8;
+
 export default function PapersTeaser() {
   const [selected, setSelected] = useState<Paper | null>(null);
   const { mode, toggle: setMode } = useContentMode();
+  const [filter, setFilter] = useState<PaperCategory | "All">("All");
+  const [showAll, setShowAll] = useState(false);
+
+  const filtered = useMemo(
+    () => (filter === "All" ? papers : papers.filter((p) => p.category === filter)),
+    [filter]
+  );
+  const visible = showAll ? filtered : filtered.slice(0, INITIAL_COUNT);
 
   return (
     <section id="papers" className="relative py-24 px-6">
@@ -46,12 +56,39 @@ export default function PapersTeaser() {
             </h2>
           </div>
           <p className="text-white/40 font-mono text-xs max-w-xs leading-relaxed">
-            Click to read the abstract, then open on arXiv.
+            {papers.length} papers, from foundations to this month. Click to
+            read the abstract, then open on arXiv.
           </p>
         </div>
 
+        <div className="flex flex-wrap gap-2 mb-8">
+          {(["All", ...paperCategories.map((c) => c.id)] as const).map((cat) => {
+            const active = filter === cat;
+            const c = paperCategories.find((p) => p.id === cat)?.color ?? "#FF0090";
+            const count =
+              cat === "All" ? papers.length : papers.filter((p) => p.category === cat).length;
+            return (
+              <button
+                key={cat}
+                onClick={() => {
+                  setFilter(cat);
+                  setShowAll(false);
+                }}
+                className="font-mono text-xs px-3 py-1 rounded-sm border transition-all duration-200"
+                style={{
+                  borderColor: active ? `${c}80` : "rgba(255,255,255,0.1)",
+                  color: active ? c : "rgba(255,255,255,0.45)",
+                  background: active ? `${c}12` : "transparent",
+                }}
+              >
+                {cat} <span className="opacity-50">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
         <div className="grid md:grid-cols-2 gap-4">
-          {papers.map((paper, i) => (
+          {visible.map((paper, i) => (
             <PaperCard
               key={paper.id}
               paper={paper}
@@ -61,11 +98,16 @@ export default function PapersTeaser() {
           ))}
         </div>
 
-        <div className="mt-6 text-center">
-          <span className="font-mono text-xs text-white/25 tracking-widest uppercase">
-            Full annotated paper library · coming soon
-          </span>
-        </div>
+        {filtered.length > INITIAL_COUNT && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowAll((v) => !v)}
+              className="font-mono text-xs text-white/40 hover:text-white/80 tracking-widest uppercase transition-colors border border-white/10 hover:border-white/30 px-5 py-2 rounded"
+            >
+              {showAll ? "Show fewer" : `Show all ${filtered.length} papers`}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Paper detail modal */}
