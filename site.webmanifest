@@ -1,0 +1,29 @@
+{
+  "name": "ZIBALDONE.AI",
+  "short_name": "ZIBALDONE",
+  "description": "The free open knowledge base for Agentic AI",
+  "start_url": "/Claude-Agentic-Freedom/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#000008",
+  "background_color": "#000008",
+  "icons": [
+    {
+      "src": "/Claude-Agentic-Freedom/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/Claude-Agentic-Freedom/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Claude-Agentic-Freedom/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
